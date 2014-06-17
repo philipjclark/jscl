@@ -254,11 +254,14 @@
 (when (string/= (%js-typeof |module|) "undefined")
   (push :node *features*))
 
+(defvar *root*)
+
 ;;; --------------------------------------------------------------------------------
 ;;; Web REPL
 ;;; --------------------------------------------------------------------------------
 
-(defvar *root* (%js-vref #:|window|))
+(defun %write-string (string)
+  (#j:jqconsole:Write string "jqconsole-output"))
 
 (defun load-history ()
   (let ((raw (#j:localStorage:getItem "jqhist")))
@@ -269,6 +272,8 @@
   (#j:localStorage:setItem "jqhist" (#j:JSON:stringify (#j:jqconsole:GetHistory))))
 
 (defun toplevel ()
+  (#j:jqconsole:RegisterMatching "(" ")" "parents")
+
   (let ((prompt (format nil "~a> " (package-name *package*))))
     (#j:jqconsole:Write prompt "jqconsole-prompt"))
   (flet ((process-input (input)
@@ -295,12 +300,29 @@
     (#j:jqconsole:Prompt t #'process-input)))
 
 
-(defun init (&rest args)
-  (#j:jqconsole:RegisterMatching "(" ")" "parents")
+(defun web-init ()
+  (setq *root* (%js-vref #:|window|))
+  (setq *standard-output*
+        (vector 'stream
+                (lambda (ch) (%write-string (string ch)))
+                (lambda (string) (%write-string string))))
+
   (load-history)
-  (toplevel))
+  (#j:window:addEventListener "load" (lambda (&rest args) (toplevel))))
+
+
+
+;;; ----------------------------------------------------------------------
+;;; Node REPL
+
+(defun node-init ()
+  (setq *root* (%js-vref #:|global|))
+  (setq *standard-output*
+        (vector 'stream
+                (lambda (ch) (#j:console:log (string ch)))
+                (lambda (string) (#j:console:log string)))))
 
 
 (if (find :node *features*)
-    nil
-    (#j:window:addEventListener "load" #'init))
+    (node-init)
+    (web-init))
