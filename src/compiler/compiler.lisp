@@ -1317,6 +1317,10 @@
             `(%js-vset ,var ,new-value)
             `(%js-vref ,var))))
 
+(define-compilation %js-typeof (x)
+  `(call |js_to_lisp| (typeof ,x)))
+
+
 
 #-jscl
 (defvar *macroexpander-cache*

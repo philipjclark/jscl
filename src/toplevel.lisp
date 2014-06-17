@@ -250,8 +250,15 @@
 
 (setq *package* *user-package*)
 
-(defvar *root* (%js-vref #:|window|))
 
+(when (string/= (%js-typeof |module|) "undefined")
+  (push :node *features*))
+
+;;; --------------------------------------------------------------------------------
+;;; Web REPL
+;;; --------------------------------------------------------------------------------
+
+(defvar *root* (%js-vref #:|window|))
 
 (defun load-history ()
   (let ((raw (#j:localStorage:getItem "jqhist")))
@@ -293,4 +300,7 @@
   (load-history)
   (toplevel))
 
-(#j:window:addEventListener "load" #'init)
+
+(if (find :node *features*)
+    nil
+    (#j:window:addEventListener "load" #'init))
