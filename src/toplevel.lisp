@@ -271,9 +271,7 @@
 (defun save-history ()
   (#j:localStorage:setItem "jqhist" (#j:JSON:stringify (#j:jqconsole:GetHistory))))
 
-(defun toplevel ()
-  (#j:jqconsole:RegisterMatching "(" ")" "parents")
-
+(defun web-toplevel ()
   (let ((prompt (format nil "~a> " (package-name *package*))))
     (#j:jqconsole:Write prompt "jqconsole-prompt"))
   (flet ((process-input (input)
@@ -296,7 +294,7 @@
                  (#j:jqconsole:Write (format nil "Error occurred~%") "jqconsole-error"))
              
              (save-history)) 
-           (toplevel)))
+           (web-toplevel)))
     (#j:jqconsole:Prompt t #'process-input)))
 
 
@@ -306,21 +304,25 @@
         (vector 'stream
                 (lambda (ch) (%write-string (string ch)))
                 (lambda (string) (%write-string string))))
-
   (load-history)
-  (#j:window:addEventListener "load" (lambda (&rest args) (toplevel))))
+  (#j:jqconsole:RegisterMatching "(" ")" "parents")
+  (#j:window:addEventListener "load" (lambda (&rest args) (web-toplevel))))
 
 
 
 ;;; ----------------------------------------------------------------------
 ;;; Node REPL
 
+(defun node-toplevel ()
+  (format t "CL-USER> "))
+
 (defun node-init ()
   (setq *root* (%js-vref #:|global|))
   (setq *standard-output*
         (vector 'stream
                 (lambda (ch) (#j:console:log (string ch)))
-                (lambda (string) (#j:console:log string)))))
+                (lambda (string) (#j:console:log string))))
+  (node-toplevel))
 
 
 (if (find :node *features*)
