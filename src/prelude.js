@@ -8,6 +8,8 @@ var nil;
 
 var lisp = {};
 
+var LSP = {};
+
 globalEval = eval;  // Just an indirect eval
 
 function pv (x) { return x==undefined? nil: x; }

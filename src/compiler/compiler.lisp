@@ -548,12 +548,12 @@
                          (array (dump-array sexp)))))
            (if (and recursive (not (symbolp sexp)))
                dumped
-               (let ((jsvar (genlit)))
-                 (push (cons sexp jsvar) *literal-table*)
-                 (toplevel-compilation `(var (,jsvar ,dumped)))
+               (let ((jsplace `(get lsp ,(genlit))))
+                 (push (cons sexp jsplace) *literal-table*)
+                 (toplevel-compilation `(= ,jsplace ,dumped))
                  (when (keywordp sexp)
-                   (toplevel-compilation `(= (get ,jsvar "value") ,jsvar)))
-                 jsvar)))))))
+                   (toplevel-compilation `(= (get ,jsplace "value") ,jsplace)))
+                 jsplace)))))))
 
 
 (define-compilation quote (sexp)
@@ -1301,11 +1301,11 @@
             (call g ,(if *multiple-value-p* '|values| '|pv|) 1 (property o key)))
     (return ,(convert nil))))
 
-(define-compilation %js-vref (var)
-  `(call |js_to_lisp| ,(make-symbol var)))
+(define-compilation %js-vref (place)
+  `(call |js_to_lisp| ,place))
 
-(define-compilation %js-vset (var val)
-  `(= ,(make-symbol var) (call |lisp_to_js| ,(convert val))))
+(define-compilation %js-vset (place val)
+  `(= ,place (call |lisp_to_js| ,(convert val))))
 
 (define-setf-expander %js-vref (var)
   (let ((new-value (gensym)))

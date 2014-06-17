@@ -51,8 +51,8 @@
 
 (defconstant t 't)
 (defconstant nil 'nil)
-(%js-vset "nil" nil)
-(%js-vset "t" t)
+(%js-vset |nil| nil)
+(%js-vset |t| t)
 
 (defmacro lambda (args &body body)
   `(function (lambda ,args ,@body)))

@@ -250,7 +250,7 @@
 
 (setq *package* *user-package*)
 
-(defvar *root* (%js-vref "window"))
+(defvar *root* (%js-vref #:|window|))
 
 
 (defun load-history ()
