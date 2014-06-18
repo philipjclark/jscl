@@ -172,3 +172,8 @@ function TagNLX (id, label){
   this.id = id;
   this.label = label;
 }
+
+
+// Node Readline
+if (typeof module !== 'undefine' && typeof global !== 'undefined')
+  global.readline = require('readline');
