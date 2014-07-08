@@ -279,7 +279,7 @@
                   (successp nil)
                   result)
              ;; Capture errors. We evaluate the form and set successp
-             ;; to T. However, if a non-local exist happens, we cancel
+             ;; to T. However, if a non-local exit happens, we cancel
              ;; it, so it is not propagated more.
              (block nil
                (unwind-protect
@@ -295,6 +295,7 @@
              
              (save-history)) 
            (web-toplevel)))
+
     (#j:jqconsole:Prompt t #'process-input)))
 
 
