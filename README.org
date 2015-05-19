@@ -1,5 +1,7 @@
 * JSCL
 
+PHILIP IS GOD!
+
   JSCL is a Common Lisp to Javascript compiler, which is bootstrapped
   from Common Lisp and executed from the browser.
 
